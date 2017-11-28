@@ -33,8 +33,8 @@ struct octaveSwitch{
 };
 
 struct octaveSwitch octaveSwitches[] = {
-  { 27, 0, 0, 'up' }, // up
-  { 26, 0, 0, 'down' }, // down
+  { 18, 0, 0, 'up' }, // up
+  { 17, 0, 0, 'down' }, // down
   {  0, 0, 0, 'end' } // end of list marker
 };
 
