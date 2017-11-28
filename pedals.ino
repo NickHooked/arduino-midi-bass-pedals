@@ -9,7 +9,6 @@ struct key{
 };
 
 struct key keys[] = {
-  { 19, 36, 0, 0, 0 },  // high C
   { 2, 24, 0, 0, 0 },  // C
   { 3, 25, 0, 0, 0 },  // Db
   { 4, 26, 0, 0, 0 },  // D
@@ -22,6 +21,7 @@ struct key keys[] = {
   { 11, 33, 0, 0, 0 },  // A
   { 12, 34, 0, 0, 0 },  // Bb
   { 13, 35, 0, 0, 0 },  // B
+  { 19, 36, 0, 0, 0 },  // high C
   {  0,  0, 0, 0, 0 }     // end of list marker
 };
 
@@ -56,8 +56,27 @@ void setup(){
     pinMode(keys[i].pin, INPUT_PULLUP);
   }
 
+  //the midi channel can be changed by holding down a note on startup
+  //to get channel 14-16 you have to hold down the high c and one of the first 3 notes
+  setMidiChannel();
+
   //start serial with midi baudrate 31250
   Serial.begin(31250);    
+}
+
+void setMidiChannel(){
+	for(int i = 0; keys[i].pin != 0; ++i){
+		if(digitalRead(keys[i].pin) == LOW){ //pedal is pressed
+			int add = i;
+			if(i != 12 && digitalRead(keys[12].pin) == LOW && i < 3){
+			//the high c is pressed, and the current pedal in the loop is not the high c and the pin is not higher then 2(we only have 16 channels)
+				add + 13; //add 12 so the midi channels 14-16 can be adressed
+			}
+			noteON + add; //add the number to the noteON value
+			noteOFF + add; //add the number to the noteOFF value
+			return true; //return true so it doesn't fire again
+		}
+	}
 }
 
 void sendMidi(byte cmd, byte data1, byte data2){
